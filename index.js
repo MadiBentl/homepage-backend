@@ -1,7 +1,20 @@
 const http = require('http')
 const express = require('express')
 const app = express()
+const mongoose = require('mongoose')
+require('dotenv').config()
 app.use(express.json()) //this is json-parser
+
+const mongoUrl = `mongodb+srv://mbentley:${process.env.MONGODB_PASSWORD}@cluster0.jeyxn.mongodb.net/haro?retryWrites=true&w=majority`
+
+const Note = require('./models/Note')
+
+mongoose.connect(mongoUrl, { useNewUrlParser: true})
+  .then(res => {
+     console.log('connected to mongodb')
+  }).catch(err => {
+    console.log('error connecting to mongodb')
+  })
 
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
@@ -33,8 +46,10 @@ let notes = [
   }
 ]
 
-app.get('/api/notes', (req, res) => {
-  res.json(notes)
+app.get('/api/notes', async (req, res) => {
+  const newNotes = await Note.find({})
+  console.log(newNotes)
+  res.json(newNotes)
 })
 
 app.get('/', (req, res) => {
