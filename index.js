@@ -2,28 +2,21 @@ const http = require('http')
 const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
-require('dotenv').config()
 app.use(express.json()) //this is json-parser
-
-const mongoUrl = `mongodb+srv://mbentley:${process.env.MONGODB_PASSWORD}@cluster0.jeyxn.mongodb.net/haro?retryWrites=true&w=majority`
+const middleware = require('./util/middleware')
+const config = require('./util/config')
 
 const Note = require('./models/Note')
 
-mongoose.connect(mongoUrl, { useNewUrlParser: true})
+mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true})
   .then(res => {
      console.log('connected to mongodb')
   }).catch(err => {
     console.log('error connecting to mongodb')
   })
 
-const requestLogger = (request, response, next) => {
-  console.log('Method:', request.method)
-  console.log('Path:  ', request.path)
-  console.log('Body:  ', request.body)
-  console.log('---')
-  next()
-}
-app.use(requestLogger)
+
+app.use(middleware.requestLogger)
 
 let notes = [
   {
@@ -56,9 +49,15 @@ app.get('/', (req, res) => {
   res.send('<h1>Hello world</h1>')
 })
 
-app.get('/api/notes/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const note = notes.find(note => note.id === id)
+app.get('/api/notes/:id', async (req, res, next) => {
+  console.log(req.params)
+  let note = {}
+  try{
+    note = await Note.findById(req.params.id)
+  }catch(err){
+    next(err)
+  }
+
   if (note){
     res.json(note)
   }else{
@@ -66,37 +65,34 @@ app.get('/api/notes/:id', (req, res) => {
   }
 })
 
-app.delete('/api/notes/:id', (req, res) => {
-  const id = Number(req.params.id)
-  notes = notes.filter(note => note.id !== id)
-
-  res.status(204).end()
+app.delete('/api/notes/:id', async (req, res, next) => {
+  try{
+    await Note.findByIdAndDelete(req.params.id)
+    res.status(204).end()
+  }catch(err){
+    next(err)
+  }
 })
 
-app.post('/api/notes', (req, res) => {
+app.post('/api/notes', async (req, res) => {
   const body = req.body
   if (!body.content){
     return res.status(400).json({error: 'content missing'})
   }
-  const maxId = notes.length > 0 ? Math.max(...notes.map(n => n.id)) : 0
-  const note = {
-    id: maxId + 1,
+  const note = new Note({
     content: body.content,
     important: body.important || false,
     date: new Date()
-  }
+  })
 
-  notes = notes.concat(note)
-  res.json(note)
+  note.save().then(result => {
+    res.json(result)
+  })
 })
 
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: 'unknown endpoint' })
-}
+app.use(middleware.unknownEndpoint)
+app.use(middleware.errorHandler)
 
-app.use(unknownEndpoint)
-
-const PORT = 3001
-app.listen(PORT, () => {
-  console.log(`Server Running on Port ${PORT}`)
+app.listen(config.PORT, () => {
+  console.log(`Server Running on Port ${config.PORT}`)
 })
