@@ -15,11 +15,19 @@ notesRouter.get('/:id', async (req, res, next) => {
   }catch(err){
     next(err)
   }
-
   if (note){
     res.json(note)
   }else{
     res.status(404).end()
+  }
+})
+
+notesRouter.put('/:id', async (req, res, next) => {
+  try{
+    const editedNote = await Note.findByIdAndUpdate(req.params.id, req.body, {new: true} )
+    res.json(editedNote)
+  }catch(err){
+    next(err)
   }
 })
 
@@ -34,14 +42,12 @@ notesRouter.delete('/:id', async (req, res, next) => {
 
 notesRouter.post('/', async (req, res) => {
   const body = req.body
-  if (!body.content){
-    return res.status(400).json({error: 'content missing'})
-  }
   const note = new Note({
-    content: body.content,
+    content: body.content || '',
     important: body.important || false,
-    date: new Date()
+    location: body.location
   })
+  console.log('note', note)
 
   note.save().then(result => {
     res.json(result)
