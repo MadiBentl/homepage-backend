@@ -3,7 +3,9 @@ const Task = require('../models/Tasklist')
 const User = require('../models/User')
 
 taskRouter.get('/', async (req, res) => {
-  const tasks = await Task.find({})
+  const user = await User.findOne({ googleId: req.body.id})
+  const tasks = await Task.find({ user })
+  console.log(tasks)
   return res.json(tasks)
 })
 
