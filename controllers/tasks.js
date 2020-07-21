@@ -8,7 +8,8 @@ taskRouter.get('/', async (req, res) => {
 
 taskRouter.put('/:id', async (req, res, next) => {
   try{
-    const editedTask = await Task.findByIdAndUpdate(req.params.id, req.body, {new: true} )
+    const editedTask = await Task.findById(req.params.id)
+    editedTask.complete = !editedTask.complete
     res.json(editedTask)
   }catch(err){
     next(err)
