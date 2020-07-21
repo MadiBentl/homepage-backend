@@ -14,12 +14,17 @@ userRouter.get('/:id', async (req, res, next) => {
   }
 })
 
+userRouter.get('/', async(req,res) => {
+  let users = await User.find({})
+  res.json(users)
+})
 userRouter.post('/', async (req, res) => {
-  if (!body.user){
+  console.log('body', req.body)
+  if (!req.body.user){
     res.json('no username')
   }
   const user = new User({
-    user: body.user
+    googleId: req.body.user
   })
 
   user.save().then(result => {
