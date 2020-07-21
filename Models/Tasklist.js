@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 const taskListSchema = new mongoose.Schema({
-  content: String!,
-  complete: Boolean!
+  content: String,
+  complete: Boolean
 })
 
 taskListSchema.set('toJSON', {

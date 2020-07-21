@@ -17,7 +17,7 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true})
 
 app.use(middleware.requestLogger)
 app.use('/api/notes', notesRouter)
-app.use('./api/tasks', taskRouter)
+app.use('/api/tasks', taskRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
