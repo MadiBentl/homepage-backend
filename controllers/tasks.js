@@ -1,6 +1,6 @@
 const taskRouter = require('express').Router()
 const Task = require('../models/Tasklist')
-const User = require('../models/User')
+const User = require('../models/user')
 
 taskRouter.get('/', async (req, res) => {
   const user = await User.findOne({ googleId: req.body.id})

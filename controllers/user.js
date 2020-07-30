@@ -1,5 +1,5 @@
 const userRouter = require('express').Router()
-const User = require('../models/User')
+const User = require('../models/user')
 
 userRouter.get('/:id', async (req, res, next) => {
   try{
