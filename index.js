@@ -9,6 +9,9 @@ app.use(express.json()) //this is json-parser
 const middleware = require('./util/middleware')
 const config = require('./util/config')
 
+mongoose.set('useFindAndModify', false);
+
+
 mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true})
   .then(res => {
      console.log('connected to mongodb')
