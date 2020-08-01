@@ -4,7 +4,6 @@ const User = require('../models/user')
 
 notesRouter.get('/', async (req, res, next) => {
   const user = await User.findOne({ googleId: req.body.id})
-  if (!user) return res.json({})
   try {
     const newNotes = await Note.find({user})
     console.log(newNotes)
