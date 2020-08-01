@@ -1,5 +1,5 @@
 const taskRouter = require('express').Router()
-const Task = require('../models/Tasklist')
+const Task = require('../models/tasklist')
 const User = require('../models/user')
 
 taskRouter.get('/', async (req, res) => {
