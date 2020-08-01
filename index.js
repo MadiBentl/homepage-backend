@@ -10,6 +10,7 @@ const middleware = require('./util/middleware')
 const config = require('./util/config')
 const cors = require('cors')
 app.use(cors())
+app.use(express.static('build'))
 
 mongoose.set('useFindAndModify', false);
 
