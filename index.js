@@ -8,6 +8,8 @@ const loginRouter = require('./controllers/user')
 app.use(express.json()) //this is json-parser
 const middleware = require('./util/middleware')
 const config = require('./util/config')
+const cors = require('cors')
+app.use(cors())
 
 mongoose.set('useFindAndModify', false);
 
@@ -25,6 +27,7 @@ app.use('/api/login', loginRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
+const PORT = config.PORT || 3001
 app.listen(config.PORT, () => {
   console.log(`Server Running on Port ${config.PORT}`)
 })
